@@ -1,7 +1,7 @@
 import numpy as np
 
-# adapted from https://github.com/bckenstler/CLR/blob/master/clr_callback.py
-def CyclicLR(base_lr=0.001, max_lr=0.006, cycle_len=4000., mode='triangular',
+# CyclicLR is adapted from https://github.com/bckenstler/CLR/blob/master/clr_callback.py
+def CyclicLR(base_lr=0.001, max_lr=0.006, iter_by_epoch=500, cycle_len=2, mode='triangular',
                  gamma=1., scale_fn=None, scale_mode='cycle'):
     """This class implements a cyclical learning rate policy (CLR).
     The method cycles the learning rate between two boundaries with
@@ -21,7 +21,7 @@ def CyclicLR(base_lr=0.001, max_lr=0.006, cycle_len=4000., mode='triangular',
     # Example
         ```python
             schedule_clr = CyclicLR(base_lr=0.001, max_lr=0.006,
-                                step_size=2000., mode='triangular')
+                                iter_by_epoch=500., cycle_len=2, mode='triangular')
             lambda_scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=schedule_clr)
         ```
     
@@ -29,7 +29,7 @@ def CyclicLR(base_lr=0.001, max_lr=0.006, cycle_len=4000., mode='triangular',
         ```python
             clr_fn = lambda x: 0.5*(1+np.sin(x*np.pi/2.))
             schedule_clr =  = CyclicLR(base_lr=0.001, max_lr=0.006,
-                                step_size=2000., scale_fn=clr_fn,
+                                iter_by_epoch=500., cycle_len=2, scale_fn=clr_fn,
                                 scale_mode='cycle')
             lambda_scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=clr)
         ```    
@@ -60,6 +60,8 @@ def CyclicLR(base_lr=0.001, max_lr=0.006, cycle_len=4000., mode='triangular',
             cycle number or cycle iterations (training
             iterations since start of cycle). Default is 'cycle'.
     """
+    nb_iter_cycle = iter_by_epoch * cycle_len
+
     if scale_fn is None:
         if mode == 'triangular':
             scale_fn = lambda x: 1.
@@ -71,11 +73,12 @@ def CyclicLR(base_lr=0.001, max_lr=0.006, cycle_len=4000., mode='triangular',
             scale_fn = lambda x: gamma**(x)
             scale_mode = 'iterations'
     
-    cycle = lambda n_iter: np.floor(1+n_iter/cycle_len)
-    x = lambda n_iter: np.abs(2*n_iter/cycle_len - 2*cycle(n_iter) + 1)
+    cycle = lambda n_iter: np.floor(1+n_iter/nb_iter_cycle)
+    x = lambda n_iter: np.abs(2*n_iter/nb_iter_cycle - 2*cycle(n_iter) + 1)
     if scale_mode == 'cycle':
         return lambda n_iter: base_lr + (max_lr-base_lr)*np.maximum(0, (1-x(n_iter)))*scale_fn(cycle(n_iter))
     else:
         return lambda n_iter: base_lr + (max_lr-base_lr)*np.maximum(0, (1-x(n_iter)))*scale_fn(n_iter)
+
 
     
