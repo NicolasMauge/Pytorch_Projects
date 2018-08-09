@@ -2,7 +2,7 @@ import numpy as np
 
 # CyclicLR is adapted from https://github.com/bckenstler/CLR/blob/master/clr_callback.py
 def CyclicLR(base_lr=0.001, max_lr=0.006, iter_by_epoch=500, cycle_len=2, mode='triangular',
-                 gamma=1., scale_fn=None, scale_mode='cycle'):
+                 gamma=1., scale_fn=None, scale_mode='cycle', shift_phase=False):
     """This class implements a cyclical learning rate policy (CLR).
     The method cycles the learning rate between two boundaries with
     some constant frequency, as detailed in this paper (https://arxiv.org/abs/1506.01186).
@@ -60,8 +60,11 @@ def CyclicLR(base_lr=0.001, max_lr=0.006, iter_by_epoch=500, cycle_len=2, mode='
             cycle number or cycle iterations (training
             iterations since start of cycle). Default is 'cycle'.
     """
-    nb_iter_cycle = iter_by_epoch * cycle_len
-
+    nb_iter_cycle = iter_by_epoch*cycle_len
+    if shift_phase:
+        shift = int(nb_iter_cycle/2)
+    else:
+        shift = 0
     if scale_fn is None:
         if mode == 'triangular':
             scale_fn = lambda x: 1.
@@ -76,9 +79,9 @@ def CyclicLR(base_lr=0.001, max_lr=0.006, iter_by_epoch=500, cycle_len=2, mode='
     cycle = lambda n_iter: np.floor(1+n_iter/nb_iter_cycle)
     x = lambda n_iter: np.abs(2*n_iter/nb_iter_cycle - 2*cycle(n_iter) + 1)
     if scale_mode == 'cycle':
-        return lambda n_iter: base_lr + (max_lr-base_lr)*np.maximum(0, (1-x(n_iter)))*scale_fn(cycle(n_iter))
+        return lambda n_iter: base_lr + (max_lr-base_lr)*np.maximum(0, (1-x(n_iter+shift)))*scale_fn(cycle(n_iter+shift))
     else:
-        return lambda n_iter: base_lr + (max_lr-base_lr)*np.maximum(0, (1-x(n_iter)))*scale_fn(n_iter)
+        return lambda n_iter: base_lr + (max_lr-base_lr)*np.maximum(0, (1-x(n_iter+shift)))*scale_fn(n_iter+shift)
 
 
     
