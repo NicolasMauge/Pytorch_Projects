@@ -61,10 +61,9 @@ def CyclicLR(base_lr=0.001, max_lr=0.006, iter_by_epoch=500, cycle_len=2, mode='
             iterations since start of cycle). Default is 'cycle'.
     """
     nb_iter_cycle = iter_by_epoch*cycle_len
-    if shift_phase!=0:
-        shift = int(nb_iter_cycle*phase)
-    else:
-        shift = 0
+
+    shift = int(nb_iter_cycle*shift_phase)
+
     if scale_fn is None:
         if mode == 'triangular':
             scale_fn = lambda x: 1.
