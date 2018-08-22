@@ -16,9 +16,11 @@ from torch.nn import functional as F
 
 from PIL import Image
 
-
-
 import copy
+
+
+sys.path.append('Pytorch_Projects')
+import schedulers as sch
 
 class BasicModel():
     def __init__(self, model, data_train, data_test, error, weight_decay=5e-4):
