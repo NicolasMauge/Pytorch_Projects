@@ -1,4 +1,6 @@
-# https://github.com/uoguelph-mlrg/Cutout
+# from https://github.com/fastai/fastai
+
+# Cifar10 Wideresnet for Dawn Submission
 
 import math
 import torch
