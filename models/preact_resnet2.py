@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch
+from torch.nn import functional as F
 
 # ------------------------------------------------------------------------
 # Preactivated resnet 18 + fp16 (mixed precision) + Adaptive Concat Pool2d
