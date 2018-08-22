@@ -82,5 +82,34 @@ def CyclicLR(base_lr=0.001, max_lr=0.006, iter_by_epoch=500, cycle_len=2, mode='
     else:
         return lambda n_iter: base_lr + (max_lr-base_lr)*np.maximum(0, (1-x(n_iter+shift)))*scale_fn(n_iter+shift)
 
+def onecycle_asym(start_lr, max_lr, last_lr, epoch_max, num_epoch, iter_by_epoch):
+    """
+    one cycle asym
+    """
+    ratio_up = (max_lr-start_lr)/(iter_by_epoch*epoch_max)
+    ratio_down = (max_lr-last_lr)/(iter_by_epoch*(num_epoch-epoch_max))
+    def f(n_iter):
+        if n_iter < epoch_max*iter_by_epoch:
+            return start_lr+n_iter*ratio_up
+        elif n_iter == epoch_max*iter_by_epoch:
+            return max_lr
+        else:
+            return max_lr - (n_iter-epoch_max*iter_by_epoch)*ratio_down
+    return f
 
+def one_cycle(hp_max=0.1, epochs=10, hp_init=0.0001, hp_final=0.005, extra=5):
+    """
+    one cycle function: in arg = current epoch
+    """
+    def f(progress):
+        if progress < epochs / 2:
+            return 2 * hp_max * (1 - (epochs - progress) / epochs)+ hp_init
+        elif progress <= epochs:
+            return hp_final + 2 * (hp_max - hp_final) * (epochs - progress) / epochs
+        elif progress <= epochs + extra:
+            return hp_final * (extra - (progress - epochs)) / extra
+        else:
+            return hp_final / 10
+        
+    return f
     
