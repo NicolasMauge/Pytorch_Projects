@@ -21,12 +21,13 @@ from PIL import Image
 import copy
 
 class BasicModel():
-    def __init__(self, model, data_train, data_test, weight_decay=5e-4):
+    def __init__(self, model, data_train, data_test, error, weight_decay=5e-4):
         self.data_train = data_train
         self.data_test = data_test
         self.model = copy.deepcopy(model)
         self.weight_decay = weight_decay
         self.epoch = 0
+        self.error = error
         
     def train(self, number_of_cycles, lr=0.1, momentum=0.9, lr_find=False, cycle_len=1, sched_lr=None, sched_mom=None): 
         self.states = {'loss':[],
@@ -94,7 +95,7 @@ class BasicModel():
                     optimizer.zero_grad()
                     outputs = model(inputs)
                     _, preds = torch.max(outputs.data, 1) 
-                    loss = error(outputs, targets)
+                    loss = self.error(outputs, targets)
 
                     loss.backward()
                     optimizer.step()
