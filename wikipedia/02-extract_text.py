@@ -11,17 +11,10 @@ ENCODING = "utf-8"
 
 
 def get_corpus_text(n_tokens=150000000):
-	import codecs
-
-	progress_n_words = 0
-	n_words = 0
-
 	file = "cleaned_text.txt"
 	iter_dump = process_xml_dump()
 	
-	to_follow_progress = n_tokens // 10
 	n_words = 0
-	progress_n_words = 0
 	n_articles_collected = 0
 	print(f"Collecting words:")
 	pbar = tqdm(total=n_tokens, ascii=True, unit="words")
