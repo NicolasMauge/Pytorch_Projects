@@ -1,3 +1,4 @@
+# 2018 (c) Nicolas MAUGE, https://github.com/NicolasMauge
 import spacy
 import time
 from utils.utils import hms_string, get_num_lines
@@ -24,7 +25,7 @@ def get_num_lines_s(filename):
             count += buffer.count(b'x_return')
     return count
 
-def process():
+def tokenize_text():
 	nlp = spacy.load('fr', disable=['parser', 'tagger', 'ner'])
 
 	file="data/articles/cleaned_text.txt"
@@ -41,4 +42,6 @@ def process():
 	elapsed_time = time.time() - start_time
 	print("- Elapsed time: {}".format(hms_string(elapsed_time)))	
 
-process()
+if __name__ == '__main__':
+	tokenize_text()
+	
