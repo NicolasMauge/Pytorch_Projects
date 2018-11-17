@@ -18,12 +18,13 @@ bptt = 70
 
 def load_data(filename):
 	with open(filename, "r") as file:
-		for article in file:
-			yield article
+		for line in file:
+			yield line
 
 def load_data_np(filename):
-	for article in load_data(filename):
-		yield np.array(article.rstrip().split(";"))
+	with open(filename, "r") as file:
+		for line in file:
+			yield np.array(line.rstrip().split(";"))
 
 class get_data():
 	def __init__(self, bptt, filenames, n_batch=64, phase="train"):
@@ -40,14 +41,6 @@ class get_data():
 		else:
 			raise ValueError(f"The parameter 'filenames'={filenames} is not a dictionnary")
 		
-		data=[]
-		for article in load_data_np(self.filenames[phase]):
-			print(article)
-			break
-			for line in article.split("x_return"):
-				data.append(line)
-
-		self.data = data
 
 	def set_phase(self, phase):
 		if phase in self.phases:
@@ -89,6 +82,10 @@ class get_data():
 
 
 	def __iter__(self):
+		data=[]
+		for line in load_data_np(self.filenames[phase]):
+			data.append(line)
+
 		data = self.set_batch()
 
 		index = 0
