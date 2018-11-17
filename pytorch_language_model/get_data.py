@@ -76,9 +76,11 @@ class get_data():
 
 		len_batch = len(data) // self.n_batch
 		data = data[:len_batch*self.n_batch]
-		data = torch.from_numpy(np.array(data).reshape(self.n_batch, -1).astype(int).T)
+		data = np.array(data).reshape(self.n_batch, -1).astype(int).T
 
-		return data
+		print(data.size())
+
+		return torch.from_numpy(data)
 
 
 	def __iter__(self):
