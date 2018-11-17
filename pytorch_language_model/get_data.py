@@ -76,6 +76,9 @@ class get_data():
 
 		len_batch = len(data) // self.n_batch
 		data = data[:len_batch*self.n_batch]
+
+		print(data[:5])
+
 		data = np.array(data).reshape(self.n_batch, -1).astype(int).T
 
 		print(data.size())
@@ -87,6 +90,8 @@ class get_data():
 		data=[]
 		for line in load_data_np(self.filenames[self.phase]):
 			data.append(line)
+
+		print(data[:5])
 
 		data = self.set_batch(data)
 
