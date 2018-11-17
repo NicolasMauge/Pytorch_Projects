@@ -42,11 +42,12 @@ class get_data():
 		
 		data=[]
 		for article in load_data_np(self.filenames[phase]):
-			data.append(article)
-		self.data = data
+			print(article)
+			break
+			for line in article.split("x_return"):
+				data.append(line)
 
-		self.init_mini_batch()
-		self.iterator = self._iterator()
+		self.data = data
 
 	def set_phase(self, phase):
 		if phase in self.phases:
@@ -76,49 +77,37 @@ class get_data():
 		rand_bptt = self.bptt if np.random.random() < 0.95 else self.bptt / 2.
 		return max(5, int(np.random.normal(rand_bptt, 5)))
 
-	def shuffle(self):
+	def set_batch(self):
 		permutation = np.random.permutation(len(self.data))
 		self.data = [self.data[i] for i in permutation]
 
-	def queue_articles(self):
-			for article in self.data:
-				yield article
-	
-	def init_mini_batch(self):
-		self.shuffle()
-		self.queue = self.queue_articles()
+		len_batch = len(data) // self.n_batch
+		data = self.data[:len_batch*self.n_batch]
+		data = torch.from_numpy(np.array(data).reshape(self.n_batch, -1).astype(int).T)
 
+		return data
 
-	def get_mini_batch(self):
-		while True:
-			try:
-				batchs = [next(self.queue) for _ in range(self.n_batch)]
-			except StopIteration:
-				break
-
-			min_len = min([article.shape[0] for article in batchs])
-			yield torch.from_numpy(np.stack([article[:min_len].astype(int) for article in batchs]).T).contiguous()
-	
 
 	def __iter__(self):
-		return self
+		data = self.set_batch()
 
-	def __next__(self):
-		return next(self.iterator)
-
-	def _iterator(self):
 		index = 0
-		for b in self.get_mini_batch():
-			while True:
-				seq_len = self.len_seq()
-				if index+seq_len+1 <= b.shape[0]:
-					yield b[index:index+seq_len], b[index+1:index+seq_len+1].view(-1)
-				else:
-					break
-				index+=seq_len
+		while True:
+			seq_len = self.len_seq()
+			if index+seq_len+1 <= data.shape[0]:
+				yield data[index:index+seq_len], data[index+1:index+seq_len+1].view(-1)
+			else:
+				break
+
+
+	
 
 
 if __name__ == '__main__':
 	filenames = {"train":"data/wiki_text_train.csv", "test":"data/wiki_text_test.csv", "valid":"data/wiki_text_valid.csv"}
-	data_class = get_data(70, filenames, n_batch=64, phase="valid")
+	data_class = get_data(10, filenames, n_batch=4, phase="valid")
+
+	#for a in iter(data_class):
+	#	print(a)
+
 
