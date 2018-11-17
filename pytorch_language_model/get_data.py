@@ -70,12 +70,12 @@ class get_data():
 		rand_bptt = self.bptt if np.random.random() < 0.95 else self.bptt / 2.
 		return max(5, int(np.random.normal(rand_bptt, 5)))
 
-	def set_batch(self):
-		permutation = np.random.permutation(len(self.data))
-		self.data = [self.data[i] for i in permutation]
+	def set_batch(self, data):
+		permutation = np.random.permutation(len(data))
+		data = [data[i] for i in permutation]
 
 		len_batch = len(data) // self.n_batch
-		data = self.data[:len_batch*self.n_batch]
+		data = data[:len_batch*self.n_batch]
 		data = torch.from_numpy(np.array(data).reshape(self.n_batch, -1).astype(int).T)
 
 		return data
@@ -86,7 +86,7 @@ class get_data():
 		for line in load_data_np(self.filenames[self.phase]):
 			data.append(line)
 
-		data = self.set_batch()
+		data = self.set_batch(data)
 
 		index = 0
 		while True:
