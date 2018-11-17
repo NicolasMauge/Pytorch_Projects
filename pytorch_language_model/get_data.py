@@ -75,6 +75,9 @@ class get_data():
 		data = [data[i] for i in permutation]
 
 		len_batch = len(data) // self.n_batch
+
+		print(data[:5])
+
 		data = data[:len_batch*self.n_batch]
 
 		print(data[:5])
