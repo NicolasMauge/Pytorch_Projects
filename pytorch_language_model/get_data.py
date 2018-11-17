@@ -83,7 +83,7 @@ class get_data():
 
 	def __iter__(self):
 		data=[]
-		for line in load_data_np(self.filenames[phase]):
+		for line in load_data_np(self.filenames[self.phase]):
 			data.append(line)
 
 		data = self.set_batch()
