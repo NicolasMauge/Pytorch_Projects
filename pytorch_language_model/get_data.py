@@ -32,6 +32,7 @@ class get_data():
 		self.phases = ["train", "valid", "test"]
 		self.n_batch = n_batch
 		self.set_phase(phase)
+		self.data = None
 
 		if isinstance(filenames, dict):
 			if [data_set in filenames for data_set in self.phases] == [True]*3:
@@ -71,6 +72,10 @@ class get_data():
 		return max(5, int(np.random.normal(rand_bptt, 5)))
 
 	def set_batch(self, data):
+		data=[]
+		for line in load_data_np(self.filenames[self.phase]):
+			data.append(line)
+
 		permutation = np.random.permutation(len(data))
 		data = [data[i] for i in permutation]
 
@@ -81,16 +86,13 @@ class get_data():
 		
 		data = data.reshape(self.n_batch, -1).astype(int).T
 
-		return torch.from_numpy(data).contiguous()
+		self.data = torch.from_numpy(data).contiguous()
 
 
 	def __iter__(self):
-		data=[]
-		for line in load_data_np(self.filenames[self.phase]):
-			data.append(line)
-
-		self.data = self.set_batch(data)
-
+		if self.data is None:
+			self.set_batch()
+		
 		index = 0
 		while True:
 			self.seq_len = self.len_seq()
