@@ -93,13 +93,13 @@ class get_data():
 		if self.data is None:
 			self.set_batch()
 
-		index = 0
+		self.index = 0
 		while True:
 			self.seq_len = self.len_seq()
 
-			if index+self.seq_len+1 <= self.data.shape[0]:
-				yield self.data[index:index+self.seq_len], self.data[index+1:index+self.seq_len+1].view(-1)
-				index += self.seq_len
+			if self.index+self.seq_len+1 <= self.data.shape[0]:
+				yield self.data[self.index:self.index+self.seq_len], self.data[self.index+1:self.index+self.seq_len+1].view(-1)
+				self.index += self.seq_len
 			else:
 				break
 
@@ -112,9 +112,12 @@ if __name__ == '__main__':
 	filenames = {"train":"data/wiki_text_train.csv", "test":"data/wiki_text_test.csv", "valid":"data/wiki_text_valid.csv"}
 	#get_data.split("data/wiki_text.csv")
 
-	data_class = get_data(10, filenames, n_batch=4, phase="valid")
+	data_class = get_data(10, filenames, n_batch=20, phase="train")
+	data_class.set_batch()
 
-	print(next(iter(data_class)))
+	print(data_class.data.shape)
+		
+	#print(next(iter(data_class)))
 	
 
 
