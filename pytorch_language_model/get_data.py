@@ -94,7 +94,6 @@ class get_data():
 		index = 0
 		while True:
 			seq_len = self.len_seq()
-			print(seq_len)
 
 			if index+seq_len+1 <= data.shape[0]:
 				yield data[index:index+seq_len], data[index+1:index+seq_len+1].view(-1)
