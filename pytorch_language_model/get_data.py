@@ -93,10 +93,11 @@ class get_data():
 
 		index = 0
 		while True:
-			seq_len = self.len_seq()
+			self.seq_len = self.len_seq()
 
-			if index+seq_len+1 <= self.data.shape[0]:
-				yield self.data[index:index+seq_len], self.data[index+1:index+seq_len+1].view(-1)
+			if index+self.seq_len+1 <= self.data.shape[0]:
+				yield self.data[index:index+self.seq_len], self.data[index+1:index+self.seq_len+1].view(-1)
+				index += self.seq_len
 			else:
 				break
 
