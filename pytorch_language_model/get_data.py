@@ -71,7 +71,7 @@ class get_data():
 		rand_bptt = self.bptt if np.random.random() < 0.95 else self.bptt / 2.
 		return max(5, int(np.random.normal(rand_bptt, 5)))
 
-	def set_batch(self, data):
+	def set_batch(self):
 		data=[]
 		for line in load_data_np(self.filenames[self.phase]):
 			data.append(line)
@@ -92,7 +92,7 @@ class get_data():
 	def __iter__(self):
 		if self.data is None:
 			self.set_batch()
-		
+
 		index = 0
 		while True:
 			self.seq_len = self.len_seq()
