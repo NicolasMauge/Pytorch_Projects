@@ -89,14 +89,14 @@ class get_data():
 		for line in load_data_np(self.filenames[self.phase]):
 			data.append(line)
 
-		data = self.set_batch(data)
+		self.data = self.set_batch(data)
 
 		index = 0
 		while True:
 			seq_len = self.len_seq()
 
-			if index+seq_len+1 <= data.shape[0]:
-				yield data[index:index+seq_len], data[index+1:index+seq_len+1].view(-1)
+			if index+seq_len+1 <= self.data.shape[0]:
+				yield self.data[index:index+seq_len], self.data[index+1:index+seq_len+1].view(-1)
 			else:
 				break
 
