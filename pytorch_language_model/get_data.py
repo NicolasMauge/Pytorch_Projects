@@ -74,19 +74,14 @@ class get_data():
 		permutation = np.random.permutation(len(data))
 		data = [data[i] for i in permutation]
 
-		len_batch = len(data) // self.n_batch
+		data = np.concatenate(data, axis=None)
 
-		print(data[:5])
-
+		len_batch = data.shape[0] // self.n_batch
 		data = data[:len_batch*self.n_batch]
+		
+		data = data.reshape(self.n_batch, -1).astype(int).T
 
-		print(data[:5])
-
-		data = np.array(data).reshape(self.n_batch, -1).astype(int).T
-
-		print(data.size())
-
-		return torch.from_numpy(data)
+		return torch.from_numpy(data).contiguous()
 
 
 	def __iter__(self):
@@ -94,13 +89,13 @@ class get_data():
 		for line in load_data_np(self.filenames[self.phase]):
 			data.append(line)
 
-		print(data[:5])
-
 		data = self.set_batch(data)
 
 		index = 0
 		while True:
 			seq_len = self.len_seq()
+			print(seq_len)
+
 			if index+seq_len+1 <= data.shape[0]:
 				yield data[index:index+seq_len], data[index+1:index+seq_len+1].view(-1)
 			else:
@@ -111,10 +106,14 @@ class get_data():
 
 
 if __name__ == '__main__':
+	# test 
 	filenames = {"train":"data/wiki_text_train.csv", "test":"data/wiki_text_test.csv", "valid":"data/wiki_text_valid.csv"}
+	#get_data.split("data/wiki_text.csv")
+
 	data_class = get_data(10, filenames, n_batch=4, phase="valid")
 
-	#for a in iter(data_class):
-	#	print(a)
+	print(next(iter(data_class)))
+	
+
 
 
